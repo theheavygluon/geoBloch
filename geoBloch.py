@@ -1,15 +1,28 @@
+import numpy as np
+import pandas as pd
+import geopy
 from geopy.geocoders import Nominatim
+from qiskit import *
+from qiskit.quantum_info import Statevector
+from qiskit.visualization import plot_bloch_vector
 
-def get_countries(lat,lon):
-    coordinates = f'{lat} {lon}'
-    locator = Nominatim(user_agent='myencoder', timeout=10)
-    location = locator.reverse(coordinates,language='en')
-    country = location.raw['address']['country_code'].upper()
-    return [country,lat,lon]
+def getLocation(cityname):
+    geolocator = Nominatim(user_agent='my-app')
+    location = geolocator.geocode(cityname)
+    lat = location.latitude
+    lng = location.longitude
+    return lat,lng
 
-get_countries(32.782023,35.478867)
+def conv(phi):
+    if (phi < 0): return np.pi - abs(phi)
+    else: return np.pi/2 - phi
+    
+def geoBloch(address):
+    coords = getLocation(address)
+    theta, phi, = coords[0]*np.pi/180, coords[1]*np.pi/180
+    
+    return plot_bloch_vector([1,conv(theta),phi], title=address+" on Bloch sphere", coord_type='spherical')
 
-
-#Step 1: get 10 stocks related to the bubble 
-#Step 2: Get the correlations between all of them from 1999 to 2000 and 2000 to 2001
-#Step 3: Study the difference
+def statevecToAddress(state):
+    return "Feature under construction"
+    
